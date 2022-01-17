@@ -12,14 +12,15 @@ firstRun = True
 primary = True
 leds = neopixel.NeoPixel(board.D21, qty)
 
-#sets up the message to run in binary
+# sets up the message to run in binary
 def messageSetup(message):
     global digits
-    res = ''.join(format(ord(i), 'b') for i in message)
+    res = "".join(format(ord(i), "b") for i in message)
     for i in res:
         digits.append(i)
 
-#actually runs the binary message
+
+# actually runs the binary message
 def message(colorA, colorB):
     global digits
     global qty
@@ -31,24 +32,40 @@ def message(colorA, colorB):
     digits = digits[1:] + digits[:1]
 
 
-#Rotates between 2 colors
+# Rotates between 2 colors
 def rotate():
     global rotateCheck
     leds[qty - 1] = leds[0]
     for i in range(qty - 1):
         leds[i] = leds[i + 1]
+
+
 def rotateSetup(colorA, colorB, length, section):
     global primary
     for i in range(length):
         if i % section == 0:
             primary = not primary
         if primary:
-             leds[i - rotateCheck] = colorA
+            leds[i - rotateCheck] = colorA
         else:
-             leds[i - rotateCheck] = colorB
+            leds[i - rotateCheck] = colorB
 
-             
-#GAY!! fun pretty estop code
+
+def setup(len=10, mode="Rotate", colorA=(125, 0, 200), colorB=(0, 0, 255), message=""):
+    if mode == "Message":
+        messageSetup(message)
+    else:
+        rotateSetup(colorA, colorB, len, 4)
+
+
+def run(mode, colorA, colorB):
+    if mode == "Message":
+        message(colorA, colorB)
+    else:
+        rotate()
+
+
+# GAY!! fun pretty estop code
 def rainbow_cycle(wait):
     while True:
         global qty
@@ -57,7 +74,9 @@ def rainbow_cycle(wait):
                 pixel_index = (i * 256 // qty) + j
                 leds[i] = wheel(pixel_index & 255)
             time.sleep(wait)
-#Wheel is used by the rainbow to...rainbow
+
+
+# Wheel is used by the rainbow to...rainbow
 def wheel(pos):
     if pos < 0 or pos > 255:
         r = g = b = 0
